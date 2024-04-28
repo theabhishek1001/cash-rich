@@ -64,5 +64,9 @@ public class UserService {
         }
     }
 
+    public Long getIdByUserName(String username) {
+        return userRepository.findByUsername(username).getId();
+    }
+
 
 }

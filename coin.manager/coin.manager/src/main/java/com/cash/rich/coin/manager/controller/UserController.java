@@ -29,7 +29,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginCredentials loginCredentials) {
         Optional<UserDto> loggedInUser = userService.login(loginCredentials.getUsername(), loginCredentials.getPassword());
 
