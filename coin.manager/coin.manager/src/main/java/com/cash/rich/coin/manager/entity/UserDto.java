@@ -6,10 +6,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class UserDto {
-
-    private String username;
     private String firstName;
     private String lastName;
     private String email;
-    private Integer mobile;
+    private Long mobile;
+    private String password;
 }

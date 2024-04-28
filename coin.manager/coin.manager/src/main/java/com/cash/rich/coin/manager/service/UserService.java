@@ -1,9 +1,10 @@
 package com.cash.rich.coin.manager.service;
 
-import com.cash.rich.coin.manager.entity.User;
+import com.cash.rich.coin.manager.entity.AppUser;
 import com.cash.rich.coin.manager.entity.UserDto;
 import com.cash.rich.coin.manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,29 +15,54 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public boolean signUp(User user) {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public boolean signUp(AppUser appUser) {
         //Checking if the username already exists
-        if(userRepository.findByUsername(user.getUsername()) != null) {
+        if(userRepository.findByUsername(appUser.getUsername()) != null) {
             return false;
         }
 
-        userRepository.save(user);
+        userRepository.save(appUser);
         return true;
     }
 
     public Optional<UserDto> login(String username, String password) {
-        User user = userRepository.findByUsername(username);
-        if(user != null && password.equals(user.getPassword())) {
+        AppUser appUser = userRepository.findByUsername(username);
+        if(appUser != null && password.equals(appUser.getPassword())) {
             UserDto userDto = new UserDto();
-            userDto.setUsername(user.getUsername());
-            userDto.setFirstName(user.getFirstName());
-            userDto.setLastName(user.getLastName());
-            userDto.setEmail(user.getEmail());
-            userDto.setMobile(user.getMobile());
+            userDto.setFirstName(appUser.getFirstName());
+            userDto.setLastName(appUser.getLastName());
+            userDto.setEmail(appUser.getEmail());
+            userDto.setMobile(appUser.getMobile());
             return Optional.of(userDto);
         } else {
             return Optional.empty();
         }
     }
+
+    public boolean updateUser(String username, UserDto updateRequest) {
+        AppUser appUser = userRepository.findByUsername(username);
+        if (appUser != null) {
+            if (updateRequest.getFirstName() != null) {
+                appUser.setFirstName(updateRequest.getFirstName());
+            }
+            if (updateRequest.getLastName() != null) {
+                appUser.setLastName(updateRequest.getLastName());
+            }
+            if (updateRequest.getMobile() != null) {
+                appUser.setMobile(updateRequest.getMobile());
+            }
+            if (updateRequest.getPassword() != null) {
+                appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+            }
+            userRepository.save(appUser);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
 }
